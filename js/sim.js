@@ -37,7 +37,7 @@
     outputText: '',
 
     h: null,                      // residual vector of the focus token
-    hLabel: 'residual stream',
+    hLabel: '残差流',
     attn: null,                   // weights over cache for the focus token
     attnHeads: null,
     attnActive: 0,
@@ -141,7 +141,7 @@
 
   var OPS = {
     tokenize: function () {
-      state.hLabel = 'token IDs';
+      state.hLabel = '词元 ID';
     },
 
     embed: function () {
@@ -152,13 +152,13 @@
 
     position: function () {
       cars().forEach(function (i) { vecs[i] = M.add(vecs[i], M.positional(i)); });
-      state.hLabel = 'embedding + position';
+      state.hLabel = '嵌入 + 位置';
       state.h = vecs[focus()];
     },
 
     norm1: function () {
       cars().forEach(function (i) { normed[i] = M.layerNorm(vecs[i]); });
-      state.hLabel = 'normalised (pre-attention)';
+      state.hLabel = '归一化（注意力前）';
       state.h = normed[focus()];
     },
 
@@ -183,32 +183,32 @@
       state.cacheSize = kv[0] ? kv[0].length : 0;
       state.attnActive = 1;
       state.siloPop = 1;
-      state.hLabel = 'attention output';
+      state.hLabel = '注意力输出';
       state.h = sub.attn[focus()];
     },
 
     res1: function () {
       cars().forEach(function (i) { vecs[i] = M.add(vecs[i], sub.attn[i]); });
-      state.hLabel = 'residual stream';
+      state.hLabel = '残差流';
       state.h = vecs[focus()];
     },
 
     norm2: function () {
       cars().forEach(function (i) { normed[i] = M.layerNorm(vecs[i]); });
-      state.hLabel = 'normalised (pre-FFN)';
+      state.hLabel = '归一化（前馈前）';
       state.h = normed[focus()];
     },
 
     ffn: function () {
       sub.ffn = {};
       cars().forEach(function (i) { sub.ffn[i] = M.feedForward(normed[i], state.layer).out; });
-      state.hLabel = 'feed-forward output';
+      state.hLabel = '前馈输出';
       state.h = sub.ffn[focus()];
     },
 
     res2: function () {
       cars().forEach(function (i) { vecs[i] = M.add(vecs[i], sub.ffn[i]); });
-      state.hLabel = 'residual stream';
+      state.hLabel = '残差流';
       state.h = vecs[focus()];
     },
 
@@ -230,7 +230,7 @@
       var f = focus();
       vecs[f] = M.layerNorm(vecs[f]);
       state.h = vecs[f];
-      state.hLabel = 'final hidden state';
+      state.hLabel = '最终隐状态';
     },
 
     logits: function () {

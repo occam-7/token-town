@@ -155,88 +155,88 @@
 
   var DISTRICTS = [
     {
-      id: 'tokenize', name: 'Tokenizer Docks', x: 6, y: 5, r: 4.2, color: C.steel,
-      tag: 'Text → tokens',
-      short: 'Your prompt is cut into tokens before the model sees anything.',
-      body: 'A language model never sees letters or words. It sees IDs from a fixed vocabulary, typically 50k–200k pieces. Frequent words are a single token; rarer ones shatter into fragments, and a leading space is part of the token (shown here as ·). Here your prompt arrives by road and leaves the docks as numbered crates.'
+      id: 'tokenize', name: '分词码头', x: 6, y: 5, r: 4.2, color: C.steel,
+      tag: '文本 → 词元',
+      short: '你的提示词在模型看到任何东西之前，先被切成词元。',
+      body: '语言模型从来不看字母或单词。它看的是固定词表里的 ID，通常 5 万到 20 万个小片段。常见词就是一个词元；少见的词碎成多个片段，而词首的空格属于这个词元的一部分（这里显示为 ·）。你的提示词从公路上运进来，离开码头时已经是编了号的板条箱。'
     },
     {
-      id: 'embed', name: 'Embedding Foundry', x: 17, y: 5, r: 4.2, color: C.violet,
-      tag: 'Tokens → vectors',
-      short: 'Each token ID becomes a vector: a point in meaning-space.',
-      body: 'The token ID indexes one row of a huge embedding table. That row is the vector. Nothing about spelling survives the foundry; from here on the model manipulates only numbers. This city uses 12 numbers per token so you can watch them; GPT-class models use 4,000–16,000.'
+      id: 'embed', name: '嵌入铸造厂', x: 17, y: 5, r: 4.2, color: C.violet,
+      tag: '词元 → 向量',
+      short: '每个词元 ID 变成一个向量：意义空间里的一个点。',
+      body: '词元 ID 是那张巨大嵌入表的一行索引，那一行就是向量。拼写出了铸造厂就不存在了；从这里开始，模型只摆弄数字。这座城市每个词元只用 12 个数字，好让你看得见它们；GPT 一级的模型用 4000 到 16000 个。'
     },
     {
-      id: 'position', name: 'Positional Beacon', x: 28, y: 5, r: 4.2, color: C.ochre,
-      tag: 'Where am I?',
-      short: 'Order is stamped onto the vector, because attention has no sense of sequence.',
-      body: 'Attention is permutation-blind: without a position signal, "dog bites man" and "man bites dog" are literally the same input. The beacon adds a sinusoidal position code (real models often rotate the vector instead, using RoPE). Different frequencies let the model read both "next to" and "far from".'
+      id: 'position', name: '位置信标', x: 28, y: 5, r: 4.2, color: C.ochre,
+      tag: '我在哪？',
+      short: '顺序被盖到向量上，因为注意力本身不辨先后。',
+      body: '注意力对排列是盲的：没有位置信号，「狗咬人」和「人咬狗」就是字面意义上同一个输入。信标会加上一段正弦位置编码（真实模型常常改用 RoPE，把向量旋转一下）。不同的频率让模型既能读出「紧挨着」，也能读出「隔得很远」。'
     },
     {
-      id: 'norm', name: 'Pre-Norm Gate', x: 34, y: 11, r: 3.2, color: C.stone,
+      id: 'norm', name: '前置归一化闸门', x: 34, y: 11, r: 3.2, color: C.stone,
       tag: 'LayerNorm',
-      short: 'Re-centre and rescale the vector before every sub-layer.',
-      body: 'LayerNorm subtracts the mean and divides by the standard deviation across the vector, then applies a learned gain. It keeps activations in a range the next block can handle and stops them exploding across dozens of layers. Modern transformers normalise *before* each sub-layer, not after, hence the name "pre-norm".'
+      short: '每个子层之前，先把向量重新居中、重新缩放。',
+      body: 'LayerNorm 减去均值、除以标准差（都在向量维度上算），再乘一个学出来的增益。它把激活值压在下一块能处理的范围里，防止它们穿过几十层之后爆炸。现代 Transformer 在每个子层之前归一化，而不是之后，所以叫「前置归一化」（pre-norm）。'
     },
     {
-      id: 'attn', name: 'Attention Plaza', x: 24, y: 11, r: 5, color: C.rose,
-      tag: 'Tokens look at tokens',
-      short: 'The current token queries every earlier token and blends what it finds.',
-      body: 'Three substations project the vector into a Query, a Key and a Value. The query is scored against the key of every token in the cache; a softmax turns those scores into weights that sum to 1; the output is that weighted blend of values. The beams arcing over the warehouse are the real weights being computed for this token, right now. Two heads run in parallel here; real models run 32 or more, each looking for something different.'
+      id: 'attn', name: '注意力广场', x: 24, y: 11, r: 5, color: C.rose,
+      tag: '词元互相打量',
+      short: '当前词元向此前每个词元发问，然后把找到的东西混起来。',
+      body: '三个变电站把向量投影成一个 Query、一个 Key 和一个 Value。查询去和缓存里每个词元的键打分；softmax 把这些分数变成和为一的权重；输出就是这些值的加权混合。仓库上方划过的光弧，就是此刻为这个词元算出来的真实权重。这里并行跑两个头；真实模型跑 32 个以上，每个头找的东西都不一样。'
     },
     {
-      id: 'cache', name: 'KV Cache Warehouse', x: 24, y: 16, r: 5, color: C.sage,
-      tag: 'Memory of the past',
-      short: 'Keys and values for every token so far, stored so they are never recomputed.',
-      body: 'One silo per token. Without it, generating word 500 would mean re-processing all 499 previous tokens through every layer. With it, each new token only computes its own key and value and reads the rest. This is also why long contexts get expensive: the warehouse grows linearly with tokens and layers, and it lives in GPU memory.'
+      id: 'cache', name: 'KV 缓存仓库', x: 24, y: 16, r: 5, color: C.sage,
+      tag: '对过去的记忆',
+      short: '到目前为止每个词元的键和值都存着，永不重算。',
+      body: '每个词元一座筒仓。没有它，生成第 500 个词就要把前面 499 个词元在所有层里重算一遍。有了它，每个新词元只算自己的键和值，其余直接读取。这也正是长上下文昂贵的原因：仓库随词元数和层数线性增长，而且住在显存里。'
     },
     {
-      id: 'res', name: 'Residual Bridge', x: 14, y: 11, r: 3.2, color: C.teal,
-      tag: 'The bypass lane',
-      short: 'Sub-layers add to the vector instead of replacing it.',
-      body: 'Every sub-layer output is *added* back onto its own input. That leaves an uninterrupted road, the residual stream, running from the docks all the way to the output. Each block writes a correction onto that stream rather than rebuilding it, which is what makes 100-layer networks trainable at all.'
+      id: 'res', name: '残差桥', x: 14, y: 11, r: 3.2, color: C.teal,
+      tag: '旁通车道',
+      short: '子层把结果加到向量上，而不是替换它。',
+      body: '每个子层的输出都会加回它自己的输入。这就留下一条不间断的路——残差流，从码头一直通到输出。每个块在这条流上写一次修正，而不是把整条流重建一遍，这正是 100 层网络还能训得动的原因。'
     },
     {
-      id: 'ffn', name: 'Feed-Forward Mill', x: 23, y: 21, r: 4.6, color: C.orange,
-      tag: 'Think alone',
-      short: 'Widen, apply a non-linearity, narrow again, with no mixing between tokens.',
-      body: 'Two matrices with a GELU in between: 12 → 24 → 12 here, typically 4× in real models. Unlike attention, this stage never looks at other tokens; each one is processed in isolation. Roughly two thirds of a transformer\'s parameters live in these mills, and a lot of what a model "knows" is stored here.'
+      id: 'ffn', name: '前馈磨坊', x: 23, y: 21, r: 4.6, color: C.orange,
+      tag: '独自思考',
+      short: '拓宽、过一个非线性、再收窄，词元之间互不混合。',
+      body: '两个矩阵中间夹一个 GELU：这里是 12 → 24 → 12，真实模型通常是 4 倍。与注意力不同，这个阶段从不看别的词元，每个词元都被单独处理。Transformer 大约三分之二的参数住在这种磨坊里，模型「知道」的很多东西也存在这儿。'
     },
     {
-      id: 'layer', name: 'Layer Counter Arch', x: 39, y: 16, r: 3, color: C.brick,
-      tag: '×N blocks',
-      short: 'The whole ring repeats, with different weights every time.',
-      body: 'This is not a loop in code: it is a stack of distinct blocks, each with its own weights. Small models stack 12; large ones stack 80 or more. Broadly, early layers resolve local and syntactic structure while later ones carry more abstract, task-level features, and the residual stream carries everything forward between them.'
+      id: 'layer', name: '层计数器拱门', x: 39, y: 16, r: 3, color: C.brick,
+      tag: '×N 个块',
+      short: '整个环重复，每次权重都不同。',
+      body: '这不是代码里的循环，而是一叠互不相同的块，每块都有自己的权重。小模型叠 12 层，大模型叠 80 层以上。大致上，靠前的层解析局部和句法结构，靠后的层承载更抽象、更接近任务的特征，残差流在它们之间把一切往前带。'
     },
     {
-      id: 'finalnorm', name: 'Final Norm', x: 36, y: 27, r: 3, color: C.stone,
-      tag: 'Last tidy-up',
-      short: 'One more normalisation before the vector is turned into scores.',
-      body: 'After the last block the residual stream gets a final LayerNorm so the output head sees a well-scaled vector. Small stage, but skipping it wrecks the distribution.'
+      id: 'finalnorm', name: '最终归一化', x: 36, y: 27, r: 3, color: C.stone,
+      tag: '最后的整理',
+      short: '向量被变成分数之前，再归一化一次。',
+      body: '最后一个块之后，残差流还会过一次 LayerNorm，好让输出头看到一个尺度合适的向量。舞台不大，但跳过它整个分布就毁了。'
     },
     {
-      id: 'logits', name: 'Vocabulary Stadium', x: 27, y: 27, r: 5, color: C.moss,
-      tag: 'One score per token',
-      short: 'The vector is compared against every token in the vocabulary.',
-      body: 'The final vector is multiplied by the unembedding matrix, producing one raw score, a logit, for every token in the vocabulary. Softmax turns the whole row into a probability distribution. Each tower here is a candidate and its height is that candidate\'s probability. Note what the model produces: not an answer, a distribution.'
+      id: 'logits', name: '词表体育场', x: 27, y: 27, r: 5, color: C.moss,
+      tag: '每个词元一个分数',
+      short: '向量与词表里的每一个词元逐一比较。',
+      body: '最终向量乘以反嵌入矩阵，为词表里每个词元产出一个原始分数，即 logit。softmax 把整行变成一个概率分布。这里每座塔是一个候选，塔高就是它的概率。注意模型产出的是什么：不是答案，是一个分布。'
     },
     {
-      id: 'sample', name: 'The Sampler', x: 15, y: 27, r: 4.4, color: C.plum,
-      tag: 'Temperature & top-p',
-      short: 'Reshape the distribution, then roll the dice.',
-      body: 'Temperature divides the logits before softmax: below 1 sharpens the peak toward the safest token, above 1 flattens it and lets long shots through. Top-p (nucleus) keeps only the shortest list of candidates whose probabilities already sum to p and discards the tail. Then one token is drawn at random from what survives, which is why the same prompt can give different answers.'
+      id: 'sample', name: '采样器', x: 15, y: 27, r: 4.4, color: C.plum,
+      tag: '温度与 top-p',
+      short: '先把分布变形，然后掷骰子。',
+      body: '温度在 softmax 之前除 logits：小于 1 让峰更尖、更偏向最稳的词元，大于 1 把峰压平、给冷门留机会。top-p（核采样）只留概率之和刚好到 p 的那条最短候选名单，把尾巴丢掉。然后从幸存者里随机抽一个词元，这就是同一个提示词能给出不同答案的原因。'
     },
     {
-      id: 'emit', name: 'Output Plaza', x: 6, y: 27, r: 4, color: C.steel,
-      tag: 'One token out',
-      short: 'The chosen token is appended to the text and shown on the board.',
-      body: 'A single token leaves the city, often just a fragment of a word. Everything you have watched, the entire city, ran once to produce this one piece. Streaming output is exactly this: tokens arriving one at a time.'
+      id: 'emit', name: '输出广场', x: 6, y: 27, r: 4, color: C.steel,
+      tag: '输出一个词元',
+      short: '选中的词元被追加到文本后面，显示在大屏上。',
+      body: '只有一个词元离开城市，常常只是半个词。你刚看完的一切——整座城市——只为产出这一小片而跑了一整遍。流式输出正是如此：词元一个一个地到达。'
     },
     {
-      id: 'feedback', name: 'Feedback Highway', x: 2.5, y: 16, r: 3.5, color: C.brick,
-      tag: 'Autoregression',
-      short: 'The new token drives back to the docks and the whole city runs again.',
-      body: 'The output is appended to the input and the model runs from scratch for the next token. That is what "autoregressive" means. It is why generation is strictly sequential, why speed is quoted in tokens per second, and why a model cannot revise a token once it has left the plaza.'
+      id: 'feedback', name: '反馈高速', x: 2.5, y: 16, r: 3.5, color: C.brick,
+      tag: '自回归',
+      short: '新词元开回码头，整座城市再跑一遍。',
+      body: '输出被追加到输入之后，模型为了下一个词元从头再跑。这就是「自回归」的意思。它解释了生成为什么严格串行、速度为什么用每秒词元数来表示，也解释了为什么词元一旦离开广场，模型就再也改不了它。'
     }
   ];
 
@@ -260,11 +260,17 @@
   /* How long to hold the convoy the first time you reach a district, so the
      panel copy can actually be read. ~230 words per minute, plus a beat to
      take in the city before starting and a beat after finishing. */
+  /* 中文版：阅读停留时长按字数估算。中文没有空格，split(/\s+/) 会把整段算成
+     一个词，停留时间永远落到下限 9 秒；所以汉字按每秒 5 个（约 300 字/分钟），
+     拉丁词按每秒 3.8 个（约 230 词/分钟）分别计。 */
   function readSeconds(stageId) {
     var d = DISTRICT_BY_ID[STAGE_TO_DISTRICT[stageId] || stageId];
     if (!d) return 9;
-    var words = (d.short + ' ' + d.body).split(/\s+/).length;
-    return Math.min(26, Math.max(9, words / 3.8 + 3.5));
+    var text = d.short + ' ' + d.body;
+    var cjk = (text.match(/[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/g) || []).length;
+    var latin = text.replace(/[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/g, ' ')
+      .split(/\s+/).filter(Boolean).length;
+    return Math.min(26, Math.max(9, latin / 3.8 + cjk / 5.0 + 3.5));
   }
 
   Object.keys(STATIONS).forEach(function (route) {

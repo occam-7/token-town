@@ -21,9 +21,11 @@
   --moss: #55803f;
   --plum: #8b5f96;
 
-  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-  --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --serif: "Iowan Old Style", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  /* 中文化：字体栈补上 CJK 字体，否则中文会落到浏览器默认的宋体/黑体，
+     与这座城市的印刷感对不上。 */
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", "Sarasa Mono SC", "Noto Sans Mono CJK SC", monospace;
+  --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
+  --serif: "Iowan Old Style", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", "SimSun", serif;
   --panel-w: 372px;
   --shadow: 0 6px 22px rgba(92, 80, 60, 0.13);
 }

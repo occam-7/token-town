@@ -935,8 +935,8 @@
       ctx.font = (L.bold ? '600 ' : '') + size + 'px ' + (L.mono
         ? 'ui-monospace, Menlo, Consolas, monospace'
         : L.serif
-          ? '"Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif'
-          : 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif');
+          ? '"Iowan Old Style", Palatino, "Palatino Linotype", Georgia, "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", serif'
+          : 'system-ui, -apple-system, Segoe UI, Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif');
       ctx.textAlign = 'center';
 
       var wpx = ctx.measureText(L.text).width;
@@ -1102,8 +1102,8 @@
         if (declutter && !isActive) continue;
         /* the two districts that carry live numbers always show them */
         var sub = isActive ? d.tag : null;
-        if (d.id === 'layer') sub = 'block ' + Math.min(s.layer + 1, s.layers) + ' of ' + s.layers;
-        else if (d.id === 'cache' && s.cacheSize) sub = s.cacheSize + ' token' + (s.cacheSize === 1 ? '' : 's') + ' stored';
+        if (d.id === 'layer') sub = '第 ' + Math.min(s.layer + 1, s.layers) + ' / ' + s.layers + ' 块';
+        else if (d.id === 'cache' && s.cacheSize) sub = '已存 ' + s.cacheSize + ' 个词元';
         var anchor = plateAnchor(d);
         labels.push({
           x: anchor.x, y: anchor.y, z: anchor.z, lift: isActive ? 18 : 13,

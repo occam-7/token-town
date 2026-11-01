@@ -14,12 +14,15 @@
   var sheetOpen = false;          // mobile bottom sheet
 
   var STAGE_LABEL = {
-    tokenize: 'tokenize', embed: 'embed', position: 'position',
-    norm1: 'layernorm', attn: 'attention', res1: 'residual',
-    norm2: 'layernorm', ffn: 'feed-forward', res2: 'residual',
-    layer: 'next layer', finalnorm: 'final norm', logits: 'logits',
-    sample: 'sample', emit: 'emit', feedback: 'autoregress', done: 'done'
+    tokenize: '分词', embed: '嵌入', position: '位置编码',
+    norm1: '归一化', attn: '注意力', res1: '残差',
+    norm2: '归一化', ffn: '前馈', res2: '残差',
+    layer: '下一层', finalnorm: '最终归一化', logits: 'logits',
+    sample: '采样', emit: '输出', feedback: '自回归', done: '完成'
   };
+
+  /* 状态机内部值保持英文（被逻辑比较），只在这里换成中文显示。 */
+  var MODE_LABEL = { prefill: '预填充', decode: '解码' };
 
   function districtForStage(stage) {
     if (!stage) return null;
@@ -69,7 +72,7 @@
       if (seen[d.id]) return;
       seen[d.id] = true;
       var b = document.createElement('button');
-      b.textContent = d.name.replace(/ (Docks|Foundry|Beacon|Plaza|Warehouse|Mill|Arch|Stadium|Highway|Bridge|Gate)$/, function (m) { return m; });
+      b.textContent = d.name;
       b.dataset.id = d.id;
       b.addEventListener('click', function () {
         showDistrict(d, true);
@@ -118,7 +121,7 @@
     el['btn-tune'].addEventListener('click', function () {
       var open = el.dock.classList.toggle('tune-open');
       el['btn-tune'].setAttribute('aria-expanded', String(open));
-      el['btn-tune'].title = open ? 'Hide settings' : 'Show settings';
+      el['btn-tune'].title = open ? '收起设置' : '显示设置';
     });
   }
 
@@ -131,14 +134,14 @@
     var hidden = el.inspector.classList.contains('hidden');
     var narrow = isMobile();
     el['btn-panel'].textContent = narrow
-      ? (hidden ? 'Panel' : 'Hide')
-      : (hidden ? 'Show panel' : 'Hide panel');
-    el['btn-about'].textContent = narrow ? 'About' : 'About & accuracy';
+      ? (hidden ? '面板' : '收起')
+      : (hidden ? '显示面板' : '隐藏面板');
+    el['btn-about'].textContent = narrow ? '关于' : '关于与真实性';
     /* name the actual key, but a phone has no Space bar, so point at the
        pause button there instead */
     el['dwell-hint'].innerHTML = narrow
-      ? 'reading stop: tap <b>❚❚</b> below to hold it here'
-      : 'reading stop: press <kbd>Space</kbd> to hold it here';
+      ? '阅读停留：点下面的 <b>❚❚</b> 停在这里'
+      : '阅读停留：按 <kbd>空格</kbd> 停在这里';
   }
 
   function setSheet(open) {
@@ -196,19 +199,19 @@
   }
 
   function writeDone() {
-    el['stage-chip'].textContent = 'done';
-    el['stage-tag'].textContent = Sim.state.tripCount + ' tokens generated';
-    el['stage-name'].textContent = 'Generation complete';
-    el['stage-short'].textContent = 'The city ran ' + Sim.state.tripCount + ' complete times, once per token.';
-    el['stage-body'].textContent = 'Change the prompt, the temperature or the layer count and press Run to send another convoy through.';
+    el['stage-chip'].textContent = '完成';
+    el['stage-tag'].textContent = '已生成 ' + Sim.state.tripCount + ' 个词元';
+    el['stage-name'].textContent = '生成结束';
+    el['stage-short'].textContent = '整座城市完整跑了 ' + Sim.state.tripCount + ' 遍，每个词元一遍。';
+    el['stage-body'].textContent = '改一下提示词、温度或层数，再按「运行」，就能派下一支车队走一趟。';
   }
 
   function showDistrict(d, pin) {
     pinnedDistrict = pin ? d.id : null;
     writeStageCard(d, Sim.state.stage);
     if (pin) {
-      el['stage-chip'].textContent = 'pinned';
-      el['stage-tag'].textContent = d.tag + ' · tap empty ground to resume narration';
+      el['stage-chip'].textContent = '已固定';
+      el['stage-tag'].textContent = d.tag + ' · 点空白地面恢复讲解';
       /* tapping a district on a phone is a request to read it */
       if (isMobile()) setSheet(true);
     }
@@ -242,9 +245,9 @@
     el['play-glyph'].textContent = s.paused || s.finished ? '▶' : '❚❚';
 
     /* hud */
-    el['hud-mode'].textContent = s.finished ? 'idle' : s.mode;
+    el['hud-mode'].textContent = s.finished ? '空闲' : (MODE_LABEL[s.mode] || s.mode);
     el['hud-layer'].textContent = Math.min(s.layer + (s.stage === 'layer' ? 0 : 1), s.layers) + ' / ' + s.layers;
-    el['hud-cache'].textContent = s.cacheSize + ' token' + (s.cacheSize === 1 ? '' : 's');
+    el['hud-cache'].textContent = s.cacheSize + ' 个词元';
     el['hud-gen'].textContent = s.tripCount + ' / ' + s.maxNew;
     el['hud-note'].textContent = hudNote(s);
 
@@ -267,18 +270,18 @@
 
   function hudNote(s) {
     if (s.finished) return '';
-    if (s.reading) return '⏸ holding here so you can read the panel';
-    if (s.fastForward) return '⏩ fast-forwarding through the remaining layers: same road, different weights';
-    if (s.tourDone) return '⏩ every district explained, running the rest at speed (drag Speed down to slow it)';
-    if (s.mode === 'prefill') return 'Prefill: every prompt token rides through together, in parallel.';
-    if (s.mode === 'decode') return 'Decode: one token in the convoy, with the past coming from the KV cache.';
+    if (s.reading) return '⏸ 停在这里，让你读完面板';
+    if (s.fastForward) return '⏩ 快进剩下的层：同一条路，不同的权重';
+    if (s.tourDone) return '⏩ 所有城区都讲过了，余下的按速度跑（把速度拖慢就能看清）';
+    if (s.mode === 'prefill') return '预填充：提示词里的每个词元并行地一起穿过。';
+    if (s.mode === 'decode') return '解码：车队里只有一个词元，过去的部分从 KV 缓存里取。';
     return '';
   }
 
   function paintVector(s) {
     var cells = el.vec.children;
     var v = s.h;
-    el['vec-label'].textContent = v ? s.hLabel : 'idle';
+    el['vec-label'].textContent = v ? s.hLabel : '空闲';
     for (var i = 0; i < cells.length; i++) {
       var bar = cells[i].firstChild;
       var val = v ? v[i] : 0;
@@ -310,8 +313,8 @@
         '<span class="val">' + (p.w * 100).toFixed(1) + '%</span></div>';
     }).join('');
     if (pairs.length > top.length) {
-      html += '<p class="fine">+ ' + (pairs.length - top.length) + ' more cached token' +
-        (pairs.length - top.length === 1 ? '' : 's') + ' with smaller weights. They always sum to 100%.</p>';
+      html += '<p class="fine">另有 ' + (pairs.length - top.length) +
+        ' 个缓存词元权重更小，未列出。它们加起来始终是 100%。</p>';
     }
     el['attn-list'].innerHTML = html;
   }
@@ -324,7 +327,7 @@
     var max = list.length ? Math.max.apply(null, list.map(function (c) { return c.p || 0; })) : 1;
 
     el['cand-hint'].textContent = s.kept
-      ? 'top-p kept ' + s.kept.length + ' of ' + s.candidates.length
+      ? 'top-p 保留 ' + s.kept.length + ' / ' + s.candidates.length
       : 'logits → softmax';
 
     el['cand-list'].innerHTML = list.map(function (c) {
@@ -340,7 +343,7 @@
   }
 
   function paintTokens(s) {
-    el['ctx-count'].textContent = s.tokens.length + ' tokens';
+    el['ctx-count'].textContent = s.tokens.length + ' 个词元';
     el.tokens.innerHTML = s.tokens.map(function (tok, i) {
       var cls = 'tok' + (tok.kind === 'gen' ? ' gen' : '') + (i === s.focusIdx ? ' focus' : '');
       return '<span class="' + cls + '">' + escapeHtml(M.display(tok.text)) + '</span>';
